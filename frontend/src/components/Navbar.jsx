@@ -26,12 +26,10 @@ const Navbar = () => {
               <>
                 <li className="nav-item">
                 <Link to="/profile" className="nav-link">🔓Profile</Link>
-                  
                 </li>
                 <li className="nav-item">
                 <li><button onClick={handleLogout} to className="nav-link"> 🔒 Logout</button></li> 
-               </li>
-               
+              </li>
               </>
             ) : (
               <>

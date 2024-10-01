@@ -1,54 +1,33 @@
 import React, { useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 
-function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [pass, setPass] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+const LoginPage = () => {
+    const { login } = useUser();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-  const validarDatos = (e) => {
-    e.preventDefault();
-    if (!email.trim() || !pass.trim()) {
-      setError('Todos los campos son obligatorios');
-      setSuccess('');
-      return;
-    }
-    if (pass.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres');
-      setSuccess('');
-      return;
-    }
-    setError('');
-    setSuccess('Login exitoso');
-  };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        await login(email, password);
+    };
 
-  return (
-    <form onSubmit={validarDatos}>
-      {error && <p className="error">{error}</p>}
-      {success && <p className="success">{success}</p>}
-      <div className="form-group">
-        <label>Email</label>
-        <input
-          type="email"
-          name="email"
-          className="form-control"
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-        />
-      </div>
-      <div className="form-group">
-        <label>Contraseña</label>
-        <input
-          type="password"
-          name="pass"
-          className="form-control"
-          onChange={(e) => setPass(e.target.value)}
-          value={pass}
-        />
-      </div>
-      <button type="submit" className="btn btn-primary">Iniciar Sesión</button>
-    </form>
-  );
-}
+    return (
+        <form onSubmit={handleSubmit}>
+            <input 
+                type="email" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                placeholder="Email" 
+            />
+            <input 
+                type="password" 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                placeholder="Password" 
+            />
+            <button type="submit">Login</button>
+        </form>
+    );
+};
 
 export default LoginPage;

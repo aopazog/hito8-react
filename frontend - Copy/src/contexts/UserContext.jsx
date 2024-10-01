@@ -1,24 +1,57 @@
 import React, { createContext, useState, useContext } from 'react';
 
-// Crear el contexto de usuario
 const UserContext = createContext();
 
-// Proveedor del contexto de usuario
+export const useUser = () => useContext(UserContext);
+
 export const UserProvider = ({ children }) => {
-  const [token, setToken] = useState(true);  // Simula el token con true por defecto
+    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [email, setEmail] = useState(localStorage.getItem('email'));
 
-  const logout = () => {
-    setToken(false);  // Cambiar el token a false en logout
-  };
+    // Método para iniciar sesión
+    const login = async (email, password) => {
+        const response = await fetch('http://localhost:5000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const data = await response.json();
+        if (data.token) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('email', data.email);
+            setToken(data.token);
+            setEmail(data.email);
+        }
+    };
 
-  return (
-    <UserContext.Provider value={{ token, logout }}>
-      {children}
-    </UserContext.Provider>
-  );
-};
+    // Método para registrar un usuario
+    const register = async (email, password) => {
+        await fetch('http://localhost:5000/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+    };
 
-// Hook para utilizar el contexto de usuario
-export const useUser = () => {
-  return useContext(UserContext);
+    // Método para cerrar sesión
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        setToken(null);
+        setEmail(null);
+    };
+
+    // Método para obtener el perfil del usuario autenticado
+    const getProfile = async () => {
+        const response = await fetch('http://localhost:5000/api/auth/me', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return await response.json();
+    };
+
+    return (
+        <UserContext.Provider value={{ login, register, logout, getProfile, email }}>
+            {children}
+        </UserContext.Provider>
+    );
 };

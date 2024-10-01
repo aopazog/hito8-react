@@ -5,6 +5,24 @@ import { useUser } from '../contexts/UserContext';  // Importar el UserContext
 const Cart = () => {
   const { cart, increaseQuantity, decreaseQuantity, calculateTotal } = useContext(CarritoContext);
   const { token } = useUser();
+  const handleCheckout = async (cart) => {
+    await fetch('http://localhost:5000/api/checkouts', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ cart }),
+    });
+    if (response.ok) {
+      alert('Compra realizada con éxito');
+  } else {
+      alert('Error en la compra');
+  }
+};
+
+// Simulación de un carrito
+
   return (
     <div className="container">
       <h2>Carrito de Compras</h2>
@@ -23,6 +41,7 @@ const Cart = () => {
                 <button className="btn btn-secondary" onClick={() => increaseQuantity(pizza.id)}>
                   +
                 </button>
+
               </div>
             </div>
           </div>
@@ -30,7 +49,7 @@ const Cart = () => {
       </div>
       <div className="text-center mt-4">
         <h3>Total: ${calculateTotal()}</h3>
-        <button disabled={!token} className="btn btn-success">Pagar</button>
+        <button onClick={handleCheckout} className="btn btn-success">Pagar</button>
       </div>
     </div>
   );

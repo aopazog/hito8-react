@@ -1,12 +1,24 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 
 const Profile = () => {
-  return (
-    <div>
-      <p> Usuario: juanito@gmail.com</p>
-      <p><button>Cerrar Sesión</button></p>
-    </div>
-  )
-}
+    const { getProfile, logout, email } = useUser();
+    const [profile, setProfile] = useState(null);
 
-export default Profile
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const data = await getProfile();
+            setProfile(data);
+        };
+        fetchProfile();
+    }, []);
+
+    return (
+        <div>
+            <p>Email: {profile ? profile.email : email}</p>
+            <button onClick={logout}>Logout</button>
+        </div>
+    );
+};
+
+export default Profile;
